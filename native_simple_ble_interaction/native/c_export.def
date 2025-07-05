@@ -1,0 +1,8 @@
+LIBRARY c_export
+EXPORTS
+    bluetooth_enabled
+    scan_for_devices
+    connect_to_device
+    disconnect_device
+    get_peripheral_size
+    connect_to_predetermined

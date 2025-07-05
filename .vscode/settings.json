@@ -1,0 +1,29 @@
+{
+    "files.associations": {
+        "xstring": "cpp",
+        "coroutine": "cpp",
+        "memory": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "filesystem": "cpp",
+        "forward_list": "cpp",
+        "iterator": "cpp",
+        "list": "cpp",
+        "optional": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "vector": "cpp",
+        "xtree": "cpp",
+        "xutility": "cpp",
+        "atomic": "cpp",
+        "chrono": "cpp",
+        "iomanip": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "xfacet": "cpp",
+        "xlocbuf": "cpp",
+        "thread": "cpp"
+    }
+}

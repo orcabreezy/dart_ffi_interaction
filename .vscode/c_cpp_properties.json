@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Program Files (x86)/simpleble/include",
+                "C:/Users/Eric/flutter/bin/cache/dart-sdk/include"
+            ]
+        }
+    ],
+    "version": 4
+}

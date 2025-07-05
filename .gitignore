@@ -1,0 +1,7 @@
+# general
+build/
+
+
+# regarding dart
+.dart_tool/
+pubspec.lock

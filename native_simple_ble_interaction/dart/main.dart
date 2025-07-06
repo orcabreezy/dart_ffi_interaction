@@ -46,7 +46,10 @@ void main() async {
   //   cleanup();
   // });
 
-  final myDevice = devices[0];
+  final myDevice = devices.firstWhere(
+    // (dev) => dev.remoteId == '74:92:ba:10:fd:2b',
+    (dev) => dev.remoteId == '0c:8c:dc:35:20:27',
+  );
 
   print('connecting to device: ${myDevice.remoteId}...');
   await myDevice.connect();
@@ -65,7 +68,31 @@ void main() async {
     print('');
   }
 
+  // print('read manufacturer name characteristic');
+  print('get measurement notifications');
+  final characteristic = myDevice.services
+      .firstWhere((svc) => svc.uuid.uuidString.contains('1809'))
+      .characteristics
+      .firstWhere((char) => char.uuid.uuidString.contains('2a1c'));
+  // meas-interval: 0x2a21
+
+  characteristic.subscribe();
+  characteristic.stream.listen((newHR) => print('meas: $newHR'));
+
+  await Future.delayed(const Duration(seconds: 10));
+
+  print('unsubscribing...');
+  characteristic.unsubscribe();
+  print('unsubscribed');
+
+  await Future.delayed(const Duration(seconds: 2));
+
+  // final data = characteristic.read();
+  // print('received: ${String.fromCharCodes(data.toList())}');
+
   print('disconnecting...');
   await myDevice.disconnect();
   print('disconnected');
+
+  await myDevice.dispose();
 }

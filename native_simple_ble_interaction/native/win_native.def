@@ -2,6 +2,7 @@ LIBRARY win_native
 EXPORTS
     dart_initialize_api_dl
     register_scan_update_port
+    delete_uint8_array
     bluetooth_is_enabled
     initialize_adapter
     scan_for
@@ -16,3 +17,10 @@ EXPORTS
     discover_service_characteristics
     get_number_of_characteristics
     get_characteristic_uuid
+    read_characteristic
+    write_to_characteristic
+    register_notification_port
+    subscribe_to_characteristic
+    unsubscribe_from_characteristic
+
+    dispose_device

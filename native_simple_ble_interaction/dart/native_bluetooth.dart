@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 
 // TODO: maybe wrap all functions as async
 // TODO: correspond dart:int with native:Int64 instead of Int32
+// TODO: copy docstring from win_native.cpp
 
 final dylib = DynamicLibrary.open('native/build/Release/win_native.dll');
 
@@ -18,6 +19,12 @@ typedef _RegisterScanUpdatePort = void Function(int);
 final _RegisterScanUpdatePort registerScanUpdatePort = dylib
     .lookupFunction<_RegisterScanUpdatePort_Native, _RegisterScanUpdatePort>(
       'register_scan_update_port',
+    );
+typedef _DeleteUint8Array_Native = Void Function(Pointer<Uint8>);
+typedef _DeleteUint8Array = void Function(Pointer<Uint8>);
+final _DeleteUint8Array deleteUint8Array = dylib
+    .lookupFunction<_DeleteUint8Array_Native, _DeleteUint8Array>(
+      'delete_uint8_array',
     );
 
 typedef _BluetoothIsEnabled_Native = Int32 Function();
@@ -113,6 +120,53 @@ final _GetCharacteristicUuid getCharacteristicUuid = dylib
     .lookupFunction<_GetCharacteristicUuid_Native, _GetCharacteristicUuid>(
       'get_characteristic_uuid',
     );
+
+typedef _ReadCharacteristic_Native =
+    Pointer<Uint8> Function(Int64, Int64, Int64);
+typedef _ReadCharacteristic = Pointer<Uint8> Function(int, int, int);
+final _ReadCharacteristic readCharacteristic = dylib
+    .lookupFunction<_ReadCharacteristic_Native, _ReadCharacteristic>(
+      'read_characteristic',
+    );
+typedef _WriteToCharacteristic_Native =
+    Void Function(Int64, Int64, Int64, Pointer<Uint8>, Int64);
+typedef _WriteToCharacteristic =
+    void Function(int, int, int, Pointer<Uint8>, int);
+final _WriteToCharacteristic writeToCharacteristic = dylib
+    .lookupFunction<_WriteToCharacteristic_Native, _WriteToCharacteristic>(
+      'write_to_characteristic',
+    );
+typedef _RegisterNotificationPort_Native = Int64 Function(Int64);
+typedef _RegisterNotificationPort = int Function(int);
+final _RegisterNotificationPort registerNotificationPort = dylib
+    .lookupFunction<
+      _RegisterNotificationPort_Native,
+      _RegisterNotificationPort
+    >('register_notification_port');
+
+typedef _SubscribeToCharacteristic_Native =
+    Void Function(Int64, Int64, Int64, Int64);
+typedef _SubscribeToCharacteristic = void Function(int, int, int, int);
+final _SubscribeToCharacteristic subscribeToCharacteristic = dylib
+    .lookupFunction<
+      _SubscribeToCharacteristic_Native,
+      _SubscribeToCharacteristic
+    >('subscribe_to_characteristic');
+
+typedef _UnsubscribeFromCharacteristic_Native =
+    Void Function(Int64, Int64, Int64);
+typedef _UnsubscribeFromCharacteristic = void Function(int, int, int);
+final _UnsubscribeFromCharacteristic unsubscribeFromCharacteristic = dylib
+    .lookupFunction<
+      _UnsubscribeFromCharacteristic_Native,
+      _UnsubscribeFromCharacteristic
+    >('unsubscribe_from_characteristic');
+
+typedef _DisposeDevice_Native = Void Function(Int64);
+typedef _DisposeDevice = void Function(int);
+
+final _DisposeDevice disposeDevice = dylib
+    .lookupFunction<_DisposeDevice_Native, _DisposeDevice>('dispose_device');
 
 Future<T> runAsyncNative<T>(T Function() nativeFunc) async {
   final responsePort = ReceivePort();

@@ -1,0 +1,6 @@
+LIBRARY win_native
+EXPORTS
+    initGlobalObject
+    getGlobalObjectName
+    getGlobalObjectAge
+    getGlobalObjectDataAt

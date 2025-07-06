@@ -1,0 +1,18 @@
+LIBRARY win_native
+EXPORTS
+    dart_initialize_api_dl
+    register_scan_update_port
+    bluetooth_is_enabled
+    initialize_adapter
+    scan_for
+    cleanup
+    connect_to_device
+    disconnect_from_device
+    get_device_address
+
+    discover_device_services
+    get_number_of_services
+    get_service_uuid
+    discover_service_characteristics
+    get_number_of_characteristics
+    get_characteristic_uuid

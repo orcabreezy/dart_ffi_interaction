@@ -1,61 +1,71 @@
 import 'dart:ffi';
+import 'dart:isolate';
+import 'package:ffi/ffi.dart';
 
-import 'ble_wrapper.dart';
+import 'native_bluetooth.dart';
+import 'types/NativeBleDevice.dart';
 
 void main() async {
-  if (!BLEWrapper.isBluetoothEnabled()) {
-    print('Bluetooth is not enabled');
-    return;
+  if (bluetoothIsEnabled() != 1) {
+    print('bluetooth adapter has to be enabled');
   }
 
-  print('Bluetooth is enabled!');
+  final initializeApi = NativeApi.initializeApiDLData;
+  dartInitializeApiDl(initializeApi);
 
-  // final adapter = BLEWrapper.getAdapter();
-  // if (adapter == null) {
-  //   print('No Bluetooth adapter found');
-  //   return;
-  // }
+  final scanUpdateReceivePort = ReceivePort();
+  registerScanUpdatePort(scanUpdateReceivePort.sendPort.nativePort);
 
-  // print(
-  //   'Adapter Identifier: ${String.fromCharCodes(adapter.identifier.elements.toList())}',
-  // );
-  // print(
-  //   'Adapter Address: ${String.fromCharCodes(adapter.address.elements.toList())}',
-  // );
+  final devices = <NativeBleDevice>[];
 
-  final (deviceInfos, devices) = BLEWrapper.scanForDevices(5000, 10);
+  final sub = scanUpdateReceivePort.listen((newDeviceId) async {
+    final addr = getDeviceAddress(newDeviceId);
+    devices.add(NativeBleDevice(newDeviceId, addr.toDartString()));
+  });
 
-  if (deviceInfos.isEmpty) {
-    print('no devices found -_-');
-    return;
+  print('initializing the bluetooth adapter');
+  initializeAdapter();
+
+  print('scanning for devices');
+  await runAsyncNative(() => scanFor(1000));
+
+  sub.cancel();
+  scanUpdateReceivePort.close();
+  cleanup();
+
+  print('printing now the device ids: ');
+  for (final device in devices) {
+    print(device.remoteId);
   }
 
-  for (var device in deviceInfos) {
-    // if (device == devices.first) print('--');
-    print(
-      'Device Identifier: ${String.fromCharCodes(device.identifier.elements.toList())}',
-    );
-    print(
-      'Device Address: ${String.fromCharCodes(device.address.elements.toList())}',
-    );
-    // if (device == devices.first) print('--');
+  // Future.delayed(const Duration(seconds: 4)).then((_) async {
+  //   sub.cancel();
+  //   scanUpdateReceivePort.close();
+  //   print('Cancelled subscription and closed ReceivePort');
+
+  //   cleanup();
+  // });
+
+  final myDevice = devices[0];
+
+  print('connecting to device: ${myDevice.remoteId}...');
+  await myDevice.connect();
+
+  print('connected');
+  await Future.delayed(const Duration(seconds: 2));
+
+  print('initializing device (services, characteristics)...');
+  await myDevice.initialize();
+
+  for (final svc in myDevice.services) {
+    print('service: ${svc.uuid} ---');
+    for (final char in svc.characteristics) {
+      print('   characteristic: ${char.uuid}');
+    }
+    print('');
   }
 
-  final wantedAddress = String.fromCharCodes(
-    deviceInfos.first.address.elements.toList(),
-  );
-
-  final device = BLEWrapper.connectToDevice(wantedAddress);
-
-  if (device != null)
-    print('successfully connected');
-  else {
-    print('connection error');
-    return;
-  }
-
-  await Future.delayed(const Duration(seconds: 3));
-
-  BLEWrapper.disconnectDevice(device);
+  print('disconnecting...');
+  await myDevice.disconnect();
   print('disconnected');
 }
